@@ -28,6 +28,7 @@ const verifyRoles = async (req, res, next) => {
         if (user.role !== "admin") {
             throw new Unauthorized("You are not authorized to access this endpoint");
         }
+        req.user = user;
         next();
     } catch (ex) {
         next(ex);
