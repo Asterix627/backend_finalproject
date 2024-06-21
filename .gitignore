@@ -1,4 +1,6 @@
 node_modules
 .env
 prisma/migrations
-
+generateEnv.js
+testing
+.gitignore

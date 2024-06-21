@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,33 +8,59 @@ datasource db {
 }
 
 model User {
-  id                          String      @id @default(uuid()) @db.Char(36)
-  firstName                   String
-  lastName                    String
-  email                       String      @unique
-  password                    String
-  role                        String?     @db.VarChar(20)
-  token                       String?     @db.VarChar(255)
-  createdAt                   DateTime    @default(now())
-  updatedAt                   DateTime    @updatedAt
+  id           String         @id @default(uuid()) @db.Char(36)
+  firstName    String
+  lastName     String
+  email        String         @unique
+  password     String
+  role         String?        @db.VarChar(20)
+  token        String?        @db.VarChar(255)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  studentRegis studentRegis[]
+}
+
+model studentRegis {
+  id           String   @id @default(uuid()) @db.Char(36)
+  userId       String?
+  fullName     String
+  placeOfBirth String
+  dateOfBirth  String
+  schoolFrom   String
+  address      String?  @db.VarChar(20)
+  phoneNumber  String?  @db.VarChar(255)
+  images       image[]
+  status       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation(fields: [userId], references: [id])
+}
+
+model image {
+  id             String       @id @default(uuid()) @db.Char(36)
+  imageName      String       @db.VarChar(255)
+  imageUrl       String       @db.VarChar(255)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  studentRegisId String
+  studentRegis   studentRegis @relation(fields: [studentRegisId], references: [id])
 }
 
 model extra {
-  id                          String     @id @default(uuid()) @db.Char(36)
-  extraName                   String     @db.VarChar(255)
-  category                    String     @db.VarChar(255)
-  description                 String     @db.Text
-  image                       String     @db.VarChar(255)
-  createdAt                   DateTime   @default(now())
-  updatedAt                   DateTime   @updatedAt
+  id          String   @id @default(uuid()) @db.Char(36)
+  extraName   String   @db.VarChar(255)
+  category    String   @db.VarChar(255)
+  description String   @db.Text
+  image       String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model daftar_guru {
-  id                          String     @id @default(uuid()) @db.Char(36)
-  nama_guru                   String     @db.VarChar(255)
-  nip                         String     @db.VarChar(255)
-  jabatan                     String     @db.VarChar(255)
-  createdAt                   DateTime   @default(now())
-  updatedAt                   DateTime   @updatedAt
+  id        String   @id @default(uuid()) @db.Char(36)
+  nama_guru String   @db.VarChar(255)
+  nip       String   @db.VarChar(255)
+  jabatan   String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
