@@ -1,9 +1,10 @@
 
 require('dotenv').config();
 const express = require('express');
-const router = require('./routes/userRouter');
+const userRouter = require('./routes/userRouter');
+const teacherRouter = require('./routes/teacherRouter');
 const app = express();
-const port = 3000
+const port = process.env.PORT;
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./config/errorHandler');
@@ -18,7 +19,9 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-app.use('/api', router);
+app.use('/api', userRouter);
+app.use('/api', teacherRouter);
+
 
 app.use(errorHandler)
 

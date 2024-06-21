@@ -1,7 +1,7 @@
-const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const jwt = require('jsonwebtoken');
-const prisma = require('../../prisma/client/index');
-const {Unauthorized} = require('http-errors');
+const { Unauthorized } = require('http-errors');
 
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization').split(" ")[1];
@@ -17,11 +17,11 @@ const verifyToken = (req, res, next) => {
 };
 
 const verifyRoles = async (req, res, next) => {
-    try { 
+    try {
         const token = req.header("Authorization").split(" ")[1];
         if (!token) {
             throw new Unauthorized("Access denied. No token provided.");
-        } 
+        }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await prisma.user.findUnique({ where: { id: decoded.id } });
@@ -35,5 +35,6 @@ const verifyRoles = async (req, res, next) => {
     }
 };
 
-module.exports = {verifyToken, verifyRoles};
+
+module.exports = { verifyToken, verifyRoles };
 

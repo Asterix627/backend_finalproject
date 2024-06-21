@@ -85,7 +85,7 @@ const getAllUser = async (req, res, next) => {
 
 const updateAdmin = async (req, res, next) => {
     const { id } = req.params;
-    const user  = req.user;
+    const user = req.user;
     try {
         if (user.role !== "admin") {
             throw new Unauthorized(
@@ -109,7 +109,7 @@ const updateAdmin = async (req, res, next) => {
             where: { id: id },
             data: { role: "admin" },
         });
-        
+
         if (!updateAdmin) {
             throw new NotFound("User not found");
         }
