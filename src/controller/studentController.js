@@ -1,7 +1,7 @@
 const prisma = require("../../prisma/client");
 const uploadImage = require("../services/uploadImage");
 const cloudinary = require("cloudinary").v2;
-const { validationResult } = require("express-validator");
+// const { validationResult } = require("express-validator");
 
 const createStudent = async (req, res, next) => {
     const {
@@ -14,21 +14,9 @@ const createStudent = async (req, res, next) => {
         userId,
     } = req.body;
 
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(422).json({
-            msg: "Validation error",
-            success: false,
-            errors: errors.array(),
-        });
-    }
-
     const image = req.file;
     let imageUrl;
     let newStudentRegis;
-
-    // console.log("Received file:", image);
 
     try {
         newStudentRegis = await prisma.studentRegis.create({
@@ -89,18 +77,18 @@ const createStudent = async (req, res, next) => {
 };
 
 const getStudent = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
-        const student = await prisma.studentRegis.findUnique({
+        const students = await prisma.studentRegis.findMany({
             where: {
-                id,
+                userId,
             },
             include: {
                 images: true,
             },
         });
 
-        if (!student) {
+        if (students.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "Student not found",
@@ -110,12 +98,10 @@ const getStudent = async (req, res, next) => {
         res.status(200).json({
             success: true,
             msg: "success",
-            data: {
-                student: {
-                    ...student,
-                    images: student.images.map((image) => image.imageUrl),
-                },
-            },
+            data: students.map((student) => ({
+                ...student,
+                images: student.images.map((image) => image.imageUrl),
+            })),
         });
     } catch (error) {
         res.status(500).json({
@@ -178,10 +164,40 @@ const updateStudentReject = async (req, res, next) => {
     }
 };
 
+const deleteStudent = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        // Mencari student berdasarkan id
+        const student = await prisma.studentRegis.findUnique({ where: { id } });
+
+        // Jika student tidak ditemukan, kirimkan respon 404
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        // Menghapus student berdasarkan id
+        await prisma.studentRegis.delete({ where: { id } });
+
+        // Mengirimkan respon sukses
+        res.status(200).json({
+            success: true,
+            message: "Student has been deleted",
+        });
+    } catch (error) {
+        // Menangani kesalahan dan mengirimkan respon error
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
 module.exports = {
     createStudent,
     getStudent,
     getAllStudent,
     updateStudentApproved,
     updateStudentReject,
+    deleteStudent,
 };

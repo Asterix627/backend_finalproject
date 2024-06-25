@@ -7,7 +7,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const errorHandler = require("./config/errorHandler");
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
