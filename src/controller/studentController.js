@@ -11,8 +11,9 @@ const createStudent = async (req, res, next) => {
         schoolFrom,
         address,
         phoneNumber,
-        userId,
     } = req.body;
+
+    const userId = req.user.id;
 
     const image = req.file;
     let imageUrl;
@@ -28,7 +29,7 @@ const createStudent = async (req, res, next) => {
                 address,
                 phoneNumber,
                 status: "pending",
-                userId,
+                userId: userId,
             },
         });
 
@@ -79,7 +80,7 @@ const createStudent = async (req, res, next) => {
 const getStudent = async (req, res, next) => {
     const { userId } = req.params;
     try {
-        const students = await prisma.studentRegis.findMany({
+        const students = await prisma.studentRegis.findUnique({
             where: {
                 userId,
             },
@@ -98,10 +99,10 @@ const getStudent = async (req, res, next) => {
         res.status(200).json({
             success: true,
             msg: "success",
-            data: students.map((student) => ({
-                ...student,
-                images: student.images.map((image) => image.imageUrl),
-            })),
+            data: {
+                ...students,
+                images: students.images.map((image) => image.imageUrl),
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -168,27 +169,20 @@ const deleteStudent = async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        // Mencari student berdasarkan id
         const student = await prisma.studentRegis.findUnique({ where: { id } });
-
-        // Jika student tidak ditemukan, kirimkan respon 404
         if (!student) {
             return res.status(404).json({
                 success: false,
                 message: "Student not found",
             });
         }
-
-        // Menghapus student berdasarkan id
         await prisma.studentRegis.delete({ where: { id } });
 
-        // Mengirimkan respon sukses
         res.status(200).json({
             success: true,
             message: "Student has been deleted",
         });
     } catch (error) {
-        // Menangani kesalahan dan mengirimkan respon error
         res.status(400).json({ success: false, error: error.message });
     }
 };

@@ -11,11 +11,10 @@ const { validateUpdateAdmin } = require("../utils/validators/admin");
 const { verifyToken, verifyRoles } = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
-//###
 //router student
 router.post(
     "/studentRegis",
-    verifyToken,
+    verifyToken ,
     upload.single("image"),
     studentController.createStudent,
 );
@@ -33,7 +32,6 @@ router.put(
 );
 router.delete("/student/:id", studentController.deleteStudent);
 
-// ###
 //router user
 router.post("/register", validateRegister, registerController.register);
 router.post("/login", validateLogin, registerController.login);
