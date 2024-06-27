@@ -1,11 +1,13 @@
-require("dotenv").config();
-const express = require("express");
-const router = require("./routes/userRouter");
+
+require('dotenv').config();
+const express = require('express');
+const userRouter = require('./routes/userRouter');
+const teacherRouter = require('./routes/teacherRouter');
 const app = express();
-const port = 3000;
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const errorHandler = require("./config/errorHandler");
+const port = process.env.PORT;
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const errorHandler = require('./config/errorHandler');
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
@@ -17,9 +19,9 @@ app.listen(port, () => {
     console.log(`Server is running on PORT ${port}`)
 });
 
-app.use("/api", router);
 app.use('/api', userRouter);
-app.use('/api', ekskulRouter);
+app.use('/api', teacherRouter);
+
 
 app.use(errorHandler);
 

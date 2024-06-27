@@ -125,6 +125,7 @@ const getAllUser = async (req, res, next) => {
 const updateAdmin = async (req, res, next) => {
     const { id } = req.params;
     const user = req.user;
+    const user = req.user;
     try {
         // Periksa apakah pengguna memiliki peran admin
         if (user.role !== "admin") {
