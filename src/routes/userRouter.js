@@ -12,4 +12,3 @@ router.put('/update-admin/:id', verifyToken, verifyRoles, validateUpdateAdmin, r
 router.put('/logout', verifyToken, registerController.logout);
 
 module.exports = router;
-

@@ -1,3 +1,8 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -9,33 +14,74 @@ datasource db {
 }
 
 model User {
-  id                          String      @id @default(uuid()) @db.Char(36)
-  firstName                   String
-  lastName                    String
-  email                       String      @unique
-  password                    String
-  role                        String?     @db.VarChar(20)
-  token                       String?     @db.VarChar(255)
-  createdAt                   DateTime    @default(now())
-  updatedAt                   DateTime    @updatedAt
+  id String @id @default(uuid()) @db.Char(36)
+  firstName String
+  lastName String
+  email String @unique
+  password String
+  role Role @default(Guest)
+  token String? @db.VarChar(255)
+  image Image[]
+  studentRegisters StudentRegister[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model extra {
-  id                          String     @id @default(uuid()) @db.Char(36)
-  extraName                   String     @db.VarChar(255)
-  category                    String     @db.VarChar(255)
-  description                 String     @db.Text
-  image                       String     @db.VarChar(255)
-  createdAt                   DateTime   @default(now())
-  updatedAt                   DateTime   @updatedAt
+enum Role {
+  Guest
+  Admin
+  Student
+  Teacher
 }
 
-model daftar_guru {
-  id                          String     @id @default(uuid()) @db.Char(36)
-  nama_guru                   String     @db.VarChar(255)
-  nip                         String     @db.VarChar(255)
-  jabatan                     String     @db.VarChar(255)
-  createdAt                   DateTime   @default(now())
-  updatedAt                   DateTime   @updatedAt
+model StudentRegister {
+  id String @id @default(uuid()) @db.Char(36)
+  userId String?
+  status String?
+  user User? @relation(fields: [userId], references: [id])
 }
 
+model Teacher {
+  id String @id @default(uuid()) @db.Char(36)
+  fullName String @db.VarChar(255)
+  NIP String @db.VarChar(255)
+  position String @db.VarChar(255)
+  address String @db.VarChar(255)
+  subjects String @db.VarChar(255)
+  image Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ekskul {
+  id String @id @default(uuid()) @db.Char(36)
+  extraName String @db.VarChar(255)
+  catagory String @db.VarChar(255)
+  shortDesc String @db.Text
+  fullDesc String @db.LongText
+  meetingDays String @db.Text
+  coach String @db.VarChar(225)
+  location String @db.VarChar(255)
+  contactInfo String @db.VarChar(100)
+  images Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id String @id @default(uuid()) @db.Char(36)
+  imageName String @db.VarChar(255)
+  imageUrl String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String?
+  teacherId String?
+  ekskulId String
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
+  ekskul Ekskul @relation(fields: [ekskulId], references: [id])
+
+  @@index([userId])
+  @@index([teacherId])
+  @@index([ekskulId])
+}

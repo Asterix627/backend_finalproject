@@ -1,7 +1,7 @@
 const express = require("express");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const prisma = require("../../prisma/client");
+const prisma = require("../../prisma/client/index");
 const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const jwt = require("jsonwebtoken");
 
@@ -87,7 +87,7 @@ const updateAdmin = async (req, res, next) => {
     const { id } = req.params;
     const user  = req.user;
     try {
-        if (user.role !== "admin") {
+        if (user.role !== "Admin") {
             throw new Unauthorized(
                 "Unauthorized: Only admin can update admin roles",
             );
@@ -101,7 +101,7 @@ const updateAdmin = async (req, res, next) => {
             throw new NotFound("User not found");
         }
 
-        if (getUser.role === "admin") {
+        if (getUser.role === "Admin") {
             throw new Conflict("User is already admin");
         }
 

@@ -25,7 +25,7 @@ const verifyRoles = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-        if (user.role !== "admin") {
+        if (user.role !== "Admin") {
             throw new Unauthorized("You are not authorized to access this endpoint");
         }
         req.user = user;
@@ -36,4 +36,3 @@ const verifyRoles = async (req, res, next) => {
 };
 
 module.exports = {verifyToken, verifyRoles};
-
