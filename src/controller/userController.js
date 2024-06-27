@@ -2,7 +2,7 @@
 const express = require("express");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const prisma = require("../../prisma/client");
+const prisma = require("../../prisma/client/index");
 const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const jwt = require("jsonwebtoken");
 

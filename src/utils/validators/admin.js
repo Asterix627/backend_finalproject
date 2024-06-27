@@ -7,4 +7,3 @@ const validateUpdateAdmin = [
 ];
 
 module.exports = { validateUpdateAdmin };
-
