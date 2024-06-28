@@ -58,7 +58,7 @@ const createTeacher = async (req, res, next) => {
     }
     next(error);
   }
-}
+};
 
 const getTeachers = async (req, res, next) => {
   try {
@@ -66,6 +66,9 @@ const getTeachers = async (req, res, next) => {
     const pageNumber = parseInt(page) || 1;
     const pageSizeNumber = parseInt(limit) || 10;
     const teachers = await prisma.teacher.findMany({
+      orderBy: {
+        fullName: 'asc'
+      },
       skip: (pageNumber - 1) * pageSizeNumber,
       take: pageSizeNumber
     });
@@ -191,7 +194,7 @@ const updateTeacher = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-}
+};
 
 const deleteTeacher = async (req, res, next) => {
   try {
@@ -231,7 +234,7 @@ const deleteTeacher = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-}
+};
 
 
 module.exports = { createTeacher, getTeachers, getDetailsTeacher, updateTeacher, deleteTeacher };

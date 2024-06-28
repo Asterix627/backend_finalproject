@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const prisma = require("../../prisma/client/index");
 const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const idGenerator = require('../utils/idGenerator')
 
 const register = async (req, res, next) => {
     try {
@@ -25,9 +27,11 @@ const register = async (req, res, next) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const randomNumber = idGenerator('USR')
 
         const user = await prisma.user.create({
             data: {
+                id: randomNumber,
                 fullName: fullName,
                 email: email,
                 password: hashedPassword,

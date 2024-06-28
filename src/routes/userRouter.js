@@ -22,15 +22,15 @@ router.get("/students", studentController.getAllStudent);
 router.get("/student/:userId", verifyToken, studentController.getStudent);
 router.put(
     "/student/:id/approved",
-    verifyToken,
+    verifyToken, verifyRoles,
     studentController.updateStudentApproved,
 );
 router.put(
     "/student/:id/reject",
-    verifyToken,
+    verifyToken, verifyRoles,
     studentController.updateStudentReject,
 );
-router.delete("/student/:id", studentController.deleteStudent);
+router.delete("/student/:id", verifyToken, verifyRoles, studentController.deleteStudent);
 
 //router user
 router.post("/register", validateRegister, registerController.register);

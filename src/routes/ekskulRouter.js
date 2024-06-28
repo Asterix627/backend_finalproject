@@ -10,4 +10,4 @@ router.get("/ekskul/:id", verifyToken, verifyRoles, getEkskulById)
 router.put("/ekskul/:id", upload.array('images'), verifyToken, verifyRoles, updateEkskul)
 router.delete("/ekskul/:id", verifyToken, verifyRoles, deleteEkskul)
 
-module.exports = router
+module.exports = router;
