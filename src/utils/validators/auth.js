@@ -2,8 +2,7 @@ const { body } = require("express-validator");
 const prisma = require("../../../prisma/client/index");
 
 const validateRegister = [
-    body("firstName").notEmpty().withMessage("First Name is required"),
-    body("lastName").notEmpty().withMessage("Last Name is required"),
+    body("fullName").notEmpty().withMessage("Name is required"),
 
     body("email")
         .notEmpty()

@@ -9,58 +9,83 @@ datasource db {
 
 model User {
   id           String         @id @default(uuid()) @db.Char(36)
-  firstName    String
-  lastName     String
+  fullName     String
   email        String         @unique
   password     String
-  role         String?        @db.VarChar(20)
+  role         Role           @default(Guest)
   token        String?        @db.VarChar(255)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  image        Image[]
   studentRegis studentRegis[]
 }
 
 model studentRegis {
   id           String   @id @default(uuid()) @db.Char(36)
-  userId       String?
+  userId       String?   @unique
   fullName     String
   placeOfBirth String
   dateOfBirth  String
   schoolFrom   String
   address      String?  @db.VarChar(20)
   phoneNumber  String?  @db.VarChar(255)
-  images       image[]
+  images       Image[]
   status       String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model image {
-  id             String       @id @default(uuid()) @db.Char(36)
-  imageName      String       @db.VarChar(255)
-  imageUrl       String       @db.VarChar(255)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  studentRegisId String
-  studentRegis   studentRegis @relation(fields: [studentRegisId], references: [id], onDelete: Cascade)
+enum Role {
+  Guest
+  Admin
+  Student
+  Teacher
 }
 
-model extra {
+model Teacher {
+  id        String   @id @default(uuid()) @db.Char(36)
+  fullName  String   @db.VarChar(255)
+  NIP       String   @db.VarChar(255)
+  position  String   @db.VarChar(255)
+  address   String   @db.VarChar(255)
+  subjects  String   @db.VarChar(255)
+  image     Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ekskul {
   id          String   @id @default(uuid()) @db.Char(36)
   extraName   String   @db.VarChar(255)
-  category    String   @db.VarChar(255)
-  description String   @db.Text
-  image       String   @db.VarChar(255)
+  catagory    String   @db.VarChar(255)
+  shortDesc   String   @db.Text
+  fullDesc    String   @db.LongText
+  meetingDays String   @db.Text
+  coach       String   @db.VarChar(225)
+  location    String   @db.VarChar(255)
+  contactInfo String   @db.VarChar(100)
+  images      Image[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model daftar_guru {
-  id        String   @id @default(uuid()) @db.Char(36)
-  nama_guru String   @db.VarChar(255)
-  nip       String   @db.VarChar(255)
-  jabatan   String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Image {
+  id             String        @id @default(uuid()) @db.Char(36)
+  imageName      String        @db.VarChar(255)
+  imageUrl       String        @db.VarChar(255)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  userId         String?
+  teacherId      String?
+  ekskulId       String?
+  studentRegisId String?
+  studentRegis   studentRegis? @relation(fields: [studentRegisId], references: [id])
+  teacher        Teacher?      @relation(fields: [teacherId], references: [id])
+  user           User?         @relation(fields: [userId], references: [id])
+  ekskul         Ekskul?       @relation(fields: [ekskulId], references: [id])
+
+  @@index([userId])
+  @@index([teacherId])
+  @@index([ekskulId])
 }
