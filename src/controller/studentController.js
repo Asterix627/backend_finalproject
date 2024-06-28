@@ -114,7 +114,11 @@ const getStudent = async (req, res, next) => {
 };
 
 const getAllStudent = async (req, res, next) => {
-    const students = await prisma.studentRegis.findMany();
+    const students = await prisma.studentRegis.findMany({
+        include: {
+            images: true,
+        },
+    });
     res.status(200).send({
         success: true,
         message: "success get all students",
