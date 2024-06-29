@@ -59,11 +59,12 @@ const addEkskul = async(req, res, next) => {
                 }
             }
 
-            await prisma.ekskul.delete({
+            await prisma.image.deleteMany({
                 where : {
-                    id : createImage.id
+                    ekskulId : createEkskul.id
                 }
             })
+            
             res.status(400).json({
                 error : "Add ekskul failed",
                 detail : err.message

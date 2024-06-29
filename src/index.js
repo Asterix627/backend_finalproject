@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const userRouter = require('./routes/userRouter');
 const teacherRouter = require('./routes/teacherRouter');
+const ekskulRouter = require('./routes/ekskulRouter')
 const app = express();
 const port = 3000;
 const cors = require('cors');
@@ -21,7 +22,7 @@ app.listen(port, () => {
 
 app.use('/api', userRouter);
 app.use('/api', teacherRouter);
-
+app.use('/api', ekskulRouter);
 
 app.use(errorHandler);
 
