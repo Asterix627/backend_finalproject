@@ -55,6 +55,7 @@ router.put(
     verifyRoles,
     userController.updateAdmin,
 );
+
 router.put("/logout", verifyToken, userController.logout);
 
 router.delete("/users/:id", verifyToken, verifyRoles, userController.deleteUser )
