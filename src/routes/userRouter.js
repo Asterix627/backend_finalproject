@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const registerController = require("../controller/userController");
+const userController = require("../controller/userController");
 const studentController = require("../controller/studentController");
 const {
     validateRegister,
@@ -21,33 +21,42 @@ router.post(
 router.get("/students", studentController.getAllStudent);
 router.get("/student/:userId", verifyToken, studentController.getStudent);
 router.put(
-    "/student/:id/approved",
+    "/student/:userId/approved",
     verifyToken, verifyRoles,
     studentController.updateStudentApproved,
 );
 router.put(
-    "/student/:id/reject",
+    "/student/:userId/reject",
     verifyToken, verifyRoles,
     studentController.updateStudentReject,
 );
-router.delete("/student/:id", verifyToken, verifyRoles, studentController.deleteStudent);
+router.delete("/student/:userId", verifyToken, verifyRoles, studentController.deleteStudent);
 
 //router user
-router.post("/register", validateRegister, registerController.register);
-router.post("/login", validateLogin, registerController.login);
+router.post("/register", validateRegister, userController.register);
+router.post("/login", validateLogin, userController.login);
 router.get(
     "/get-all-user",
     verifyToken,
     verifyRoles,
-    registerController.getAllUser,
+    userController.getAllUser,
 );
+
+router.get(
+    "/users/:id",
+    verifyToken,
+    verifyRoles,
+    userController.getUserById,
+);
+
 router.put(
     "/update-admin/:id",
     verifyToken,
     verifyRoles,
-    validateUpdateAdmin,
-    registerController.updateAdmin,
+    userController.updateAdmin,
 );
-router.put("/logout", verifyToken, registerController.logout);
+router.put("/logout", verifyToken, userController.logout);
+
+router.delete("/users/:id", verifyToken, verifyRoles, userController.deleteUser )
 
 module.exports = router;

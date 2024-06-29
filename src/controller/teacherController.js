@@ -4,17 +4,17 @@ const prisma = new PrismaClient();
 const cloudinary = require('cloudinary').v2;
 
 const createTeacher = async (req, res, next) => {
-  const { fullName, email, NIP, address, subjects } = req.body;
+  const { fullName, NIP, address, subjects,position } = req.body;
   const image = req.file;
 
   try {
     const createdTeacher = await prisma.teacher.create({
       data: {
         fullName,
-        email,
         NIP,
         address,
-        subjects
+        subjects,
+        position,
       }
     });
 

@@ -131,10 +131,10 @@ const getAllStudent = async (req, res, next) => {
 };
 
 const updateStudentApproved = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id : id }
+            where: { userId : userId }
         });
 
         console.log(student)
@@ -144,7 +144,7 @@ const updateStudentApproved = async (req, res, next) => {
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { id : id },
+            where: { userId : userId },
             data: { status: "approved" },
         });
         res.json(updateStudent);
@@ -154,10 +154,10 @@ const updateStudentApproved = async (req, res, next) => {
 };
 
 const updateStudentReject = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id: id },
+            where: { userId: userId },
         });
 
         if (!student) {
@@ -165,7 +165,7 @@ const updateStudentReject = async (req, res, next) => {
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { id : id },
+            where: { userId: userId },
             data: { status: "reject" },
         });
         res.json(updateStudent);
@@ -175,17 +175,17 @@ const updateStudentReject = async (req, res, next) => {
 };
 
 const deleteStudent = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
 
     try {
-        const student = await prisma.studentRegis.findUnique({ where: { id } });
+        const student = await prisma.studentRegis.findUnique({ where: { userId: userId } });
         if (!student) {
             return res.status(404).json({
                 success: false,
                 message: "Student not found",
             });
         }
-        await prisma.studentRegis.delete({ where: { id } });
+        await prisma.studentRegis.delete({ where: { userId: userId } });
 
         res.status(200).json({
             success: true,
