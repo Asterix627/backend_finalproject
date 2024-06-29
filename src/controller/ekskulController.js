@@ -1,6 +1,7 @@
 const prisma = require("../../prisma/client/index")
 const uploadImage = require("../services/uploadImage")
 const cloudinary = require("cloudinary").v2
+const idGenerator = require("../utils/idGenerator");
 
 const addEkskul = async(req, res, next) => {
     const {extraName, catagory, shortDesc, fullDesc, meetingDays, coach, location, contactInfo} = req.body
@@ -8,10 +9,12 @@ const addEkskul = async(req, res, next) => {
     const addImages = []
     let createEkskul
     let createImage
+    const idEkskul = idGenerator("EKS");
 
     try{
         createEkskul = await prisma.ekskul.create({
             data : {
+                id : idEkskul,
                 extraName : extraName,
                 catagory : catagory,
                 shortDesc : shortDesc,

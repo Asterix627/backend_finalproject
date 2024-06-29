@@ -1,6 +1,7 @@
 const prisma = require("../../prisma/client");
 const uploadImage = require("../services/uploadImage");
 const cloudinary = require("cloudinary").v2;
+const idGenerator = require("../utils/idGenerator");
 // const { validationResult } = require("express-validator");
 
 const createStudent = async (req, res, next) => {
@@ -27,8 +28,10 @@ const createStudent = async (req, res, next) => {
     }
 
     try {
+        const studentId = idGenerator("STD");
         newStudentRegis = await prisma.studentRegis.create({
             data: {
+                id: studentId,
                 fullName,
                 placeOfBirth,
                 dateOfBirth,

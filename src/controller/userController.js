@@ -27,11 +27,11 @@ const register = async (req, res, next) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const randomNumber = idGenerator("USR");
+        const idUser = idGenerator("USR");
 
         const user = await prisma.user.create({
             data: {
-                id: randomNumber,
+                id: idUser,
                 fullName: fullName,
                 email: email,
                 password: hashedPassword,

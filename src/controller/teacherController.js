@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const uploadImage = require("../services/uploadImage");
 const prisma = new PrismaClient();
 const cloudinary = require("cloudinary").v2;
+const idGenerator = require("../utils/idGenerator");
 
 const createTeacher = async (req, res, next) => {
     const { fullName, NIP, address, subjects, position } = req.body;
@@ -23,8 +24,12 @@ const createTeacher = async (req, res, next) => {
                 message: "NIP already exists",
             });
         }
+
+        const teacherId = idGenerator("TCH");
+
         const createdTeacher = await prisma.teacher.create({
             data: {
+                id: teacherId,
                 fullName,
                 NIP,
                 address,
