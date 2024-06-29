@@ -72,7 +72,7 @@ const addEkskul = async(req, res, next) => {
         }
         next(err)
     }
-}
+};
 
 const getAllEkskul = async(req, res) => {
     try{
@@ -96,7 +96,7 @@ const getAllEkskul = async(req, res) => {
             detail : err.message
         })
     }
-}
+};
 
 const getEkskulById = async(req, res, next) => {
     try{
@@ -124,7 +124,7 @@ const getEkskulById = async(req, res, next) => {
     }catch(err){
         next(err)
     }
-}
+};
 
 const updateEkskul = async(req, res, next) => {
     const {extraName, catagory, shortDesc, fullDesc, meetingDays, coach, location, contactInfo} = req.body
@@ -197,7 +197,7 @@ const updateEkskul = async(req, res, next) => {
     } catch(err){
         next(err)
     }
-}
+};
 
 const deleteEkskul = async(req, res, next) => {
     const id = req.params.id
@@ -234,6 +234,6 @@ const deleteEkskul = async(req, res, next) => {
     }catch(err){
         next(err)
     }
-}
+};
 
-module.exports = {addEkskul, getAllEkskul, getEkskulById, updateEkskul, deleteEkskul}
+module.exports = {addEkskul, getAllEkskul, getEkskulById, updateEkskul, deleteEkskul};

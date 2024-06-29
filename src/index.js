@@ -9,6 +9,7 @@ const port = 3000;
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./config/errorHandler');
+const { ekskul } = require('../prisma/client');
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
@@ -23,6 +24,7 @@ app.listen(port, () => {
 app.use('/api', userRouter);
 app.use('/api', teacherRouter);
 app.use('/api', ekskulRouter);
+
 
 app.use(errorHandler);
 

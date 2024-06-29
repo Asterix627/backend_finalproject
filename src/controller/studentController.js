@@ -19,6 +19,13 @@ const createStudent = async (req, res, next) => {
     let imageUrl;
     let newStudentRegis;
 
+    const user = await prisma.studentRegis.findUnique(
+        {where: { userId: userId }});
+
+    if (user) {
+        return res.status(400).json({ message: "Kamu sudah mendaftar" });
+    }
+
     try {
         newStudentRegis = await prisma.studentRegis.create({
             data: {
@@ -82,14 +89,14 @@ const getStudent = async (req, res, next) => {
     try {
         const students = await prisma.studentRegis.findUnique({
             where: {
-                userId,
+                userId : userId,
             },
             include: {
                 images: true,
             },
         });
 
-        if (students.length === 0) {
+        if (!students) {
             return res.status(404).json({
                 success: false,
                 message: "Student not found",
@@ -127,15 +134,17 @@ const updateStudentApproved = async (req, res, next) => {
     const { id } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id },
+            where: { id : id }
         });
+
+        console.log(student)
 
         if (!student) {
             throw new NotFound("student not found");
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { id },
+            where: { id : id },
             data: { status: "approved" },
         });
         res.json(updateStudent);
@@ -148,7 +157,7 @@ const updateStudentReject = async (req, res, next) => {
     const { id } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id },
+            where: { id: id },
         });
 
         if (!student) {
@@ -156,7 +165,7 @@ const updateStudentReject = async (req, res, next) => {
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { id },
+            where: { id : id },
             data: { status: "reject" },
         });
         res.json(updateStudent);
