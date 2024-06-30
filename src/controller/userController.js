@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const prisma = require("../../prisma/client/index");
 const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const idGenerator = require("../utils/idGenerator");
 
 const register = async (req, res, next) => {
     try {
@@ -25,9 +27,11 @@ const register = async (req, res, next) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const idUser = idGenerator("USR");
 
         const user = await prisma.user.create({
             data: {
+                id: idUser,
                 fullName: fullName,
                 email: email,
                 password: hashedPassword,
@@ -62,7 +66,7 @@ const login = async (req, res, next) => {
         }
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-            expiresIn: "1d",
+            expiresIn: "365d",
         });
 
         await prisma.user.update({
@@ -96,16 +100,33 @@ const getAllUser = async (req, res, next) => {
     });
 };
 
-const updateAdmin = async (req, res, next) => {
+const getUserById = async (req, res, next) => {
     const { id } = req.params;
-    const user = req.user;
+
     try {
-        if (user.role !== "admin") {
-            throw new Unauthorized(
-                "Unauthorized: Only admin can update admin roles",
-            );
+        const user = await prisma.user.findUnique({
+            where: {
+                id: id,
+            },
+        });
+
+        if (!user) {
+            throw new NotFound("User not found");
         }
 
+        res.send({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateAdmin = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
         const getUser = await prisma.user.findUnique({
             where: { id: id },
         });
@@ -114,13 +135,13 @@ const updateAdmin = async (req, res, next) => {
             throw new NotFound("User not found");
         }
 
-        if (getUser.role === "admin") {
+        if (getUser.role === "Admin") {
             throw new Conflict("User is already admin");
         }
 
         const updateAdmin = await prisma.user.update({
             where: { id: id },
-            data: { role: "admin" },
+            data: { role: "Admin" },
         });
 
         if (!updateAdmin) {
@@ -164,10 +185,42 @@ const logout = async (req, res, next) => {
     });
 };
 
+const deleteUser = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: id,
+            },
+        });
+
+        if (!user) {
+            throw new NotFound("User not found");
+        }
+
+        await prisma.user.delete({
+            where: { 
+                id: id 
+            },
+        });
+
+        res.send({
+            success: true,
+            message: "User deleted successfully",
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     register,
     login,
     getAllUser,
+    getUserById,
     updateAdmin,
     logout,
+    deleteUser,
 };
