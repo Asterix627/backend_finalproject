@@ -39,9 +39,11 @@ const createTeacher = async (req, res, next) => {
         });
 
         if (image) {
+            const imageId = idGenerator("IMG");
             const imageUrl = await uploadImage(image);
             const createdImage = await prisma.image.create({
                 data: {
+                    id: imageId,
                     imageName: image.originalname,
                     imageUrl,
                     teacherId: createdTeacher.id,
@@ -123,7 +125,7 @@ const getDetailsTeacher = async (req, res, next) => {
         const teacher = await prisma.teacher.findUnique({
             where: { id: id },
             include: {
-                image: true,
+                images: true,
             },
         });
 
@@ -136,14 +138,15 @@ const getDetailsTeacher = async (req, res, next) => {
             });
         }
 
-        const imageUrl = teacher.image.map((image) => image.imageUrl);
+        const imageUrl = teacher.images.map((images) => images.imageUrl);
+
 
         res.status(200).json({
             success: true,
             message: "Teacher retrieved successfully",
             data: {
                 ...teacher,
-                image: imageUrl,
+                images: imageUrl,
             },
         });
     } catch (error) {
@@ -158,9 +161,9 @@ const updateTeacher = async (req, res, next) => {
         const image = req.file;
 
         const curentTeacher = await prisma.teacher.findUnique({
-            where: { id : id },
+            where: { id: id },
             include: {
-                image: true,
+                images: true,
             },
         });
 
@@ -172,7 +175,7 @@ const updateTeacher = async (req, res, next) => {
         }
 
         const updatedTeacher = await prisma.teacher.update({
-            where: { id :id },
+            where: { id: id },
             data: {
                 fullName,
                 NIP,
@@ -197,9 +200,11 @@ const updateTeacher = async (req, res, next) => {
                     where: { teacherId: id },
                 });
             }
+            const imageId = idGenerator("IMG");
             const imageUrl = await uploadImage(image);
             updatedImage = await prisma.image.create({
                 data: {
+                    id: imageId,
                     imageName: image.originalname,
                     imageUrl,
                     teacherId: updatedTeacher.id,
@@ -226,9 +231,9 @@ const deleteTeacher = async (req, res, next) => {
     try {
         const { id } = req.params;
         const teacher = await prisma.teacher.findUnique({
-            where: { id : id },
+            where: { id: id },
             include: {
-                image: true,
+                images: true,
             },
         });
 
@@ -239,7 +244,7 @@ const deleteTeacher = async (req, res, next) => {
             });
         }
 
-        for (const image of teacher.image) {
+        for (const image of teacher.images) {
             const publicId = image.imageUrl.split("/").pop().split(".")[0];
             await cloudinary.uploader.destroy(publicId);
         }
@@ -249,7 +254,7 @@ const deleteTeacher = async (req, res, next) => {
         });
 
         const deletedTeacher = await prisma.teacher.delete({
-            where: { id : id },
+            where: { id: id },
         });
 
         res.status(200).json({

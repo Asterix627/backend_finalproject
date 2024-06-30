@@ -5,6 +5,7 @@ const prisma = require("../../prisma/client/index");
 const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+
 const idGenerator = require("../utils/idGenerator");
 
 const register = async (req, res, next) => {
@@ -200,8 +201,8 @@ const deleteUser = async (req, res, next) => {
         }
 
         await prisma.user.delete({
-            where: { 
-                id: id 
+            where: {
+                id: id,
             },
         });
 

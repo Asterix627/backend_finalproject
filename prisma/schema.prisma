@@ -40,7 +40,6 @@ enum Role {
   Guest
   Admin
   Student
-  Teacher
 }
 
 model Teacher {
