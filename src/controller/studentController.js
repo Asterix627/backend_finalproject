@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/client");
+const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const uploadImage = require("../services/uploadImage");
 const cloudinary = require("cloudinary").v2;
 const idGenerator = require("../utils/idGenerator");
@@ -15,19 +16,20 @@ const createStudent = async (req, res, next) => {
     } = req.body;
 
     const userId = req.user.id;
-
     const image = req.file;
     let imageUrl;
     let newStudentRegis;
 
-    const user = await prisma.studentRegis.findUnique(
-        {where: { userId: userId }});
+    const user = await prisma.studentRegis.findUnique({
+        where: { userId: userId },
+    });
 
     if (user) {
         return res.status(400).json({ message: "Kamu sudah mendaftar" });
     }
 
     try {
+        const imageId = idGenerator("IMG");
         const studentId = idGenerator("STD");
         newStudentRegis = await prisma.studentRegis.create({
             data: {
@@ -47,6 +49,7 @@ const createStudent = async (req, res, next) => {
             imageUrl = await uploadImage(image);
             const createdImage = await prisma.image.create({
                 data: {
+                    id: imageId,
                     imageName: image.originalname,
                     imageUrl,
                     studentRegisId: newStudentRegis.id,
@@ -92,7 +95,7 @@ const getStudent = async (req, res, next) => {
     try {
         const students = await prisma.studentRegis.findUnique({
             where: {
-                userId : userId,
+                userId: userId,
             },
             include: {
                 images: true,
@@ -138,21 +141,19 @@ const getAllStudent = async (req, res, next) => {
 };
 
 const updateStudentApproved = async (req, res, next) => {
-    const { userId } = req.params;
+    const { id } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { userId : userId }
+            where: { id },
         });
-
-        console.log(student)
 
         if (!student) {
             throw new NotFound("student not found");
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { userId : userId },
-            data: { status: "approved" },
+            where: { id },
+            data: { status: "Approved" },
         });
         res.json(updateStudent);
     } catch (error) {
@@ -161,10 +162,10 @@ const updateStudentApproved = async (req, res, next) => {
 };
 
 const updateStudentReject = async (req, res, next) => {
-    const { userId } = req.params;
+    const { id } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { userId: userId },
+            where: { id: id },
         });
 
         if (!student) {
@@ -172,7 +173,7 @@ const updateStudentReject = async (req, res, next) => {
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { userId: userId },
+            where: { id: id },
             data: { status: "reject" },
         });
         res.json(updateStudent);
@@ -185,7 +186,9 @@ const deleteStudent = async (req, res, next) => {
     const { userId } = req.params;
 
     try {
-        const student = await prisma.studentRegis.findUnique({ where: { userId: userId } });
+        const student = await prisma.studentRegis.findUnique({
+            where: { userId: userId },
+        });
         if (!student) {
             return res.status(404).json({
                 success: false,

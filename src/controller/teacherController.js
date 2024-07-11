@@ -5,26 +5,27 @@ const cloudinary = require("cloudinary").v2;
 const idGenerator = require("../utils/idGenerator");
 
 const createTeacher = async (req, res, next) => {
-    const { fullName, NIP, address, subjects, position } = req.body;
+    const { fullName, address, NIP, subjects, position } = req.body;
     const image = req.file;
 
     let createdTeacher;
     let createdImage;
 
     try {
-        const checkNIP = await prisma.teacher.findMany({
+        const checkNIP = await prisma.teacher.findUnique({
             where: {
                 NIP,
             },
         });
 
-        if (checkNIP.length > 0) {
+        if (checkNIP && checkNIP.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: "NIP already exists",
             });
         }
 
+        const imageId = idGenerator("IMG");
         const teacherId = idGenerator("TCH");
 
         const createdTeacher = await prisma.teacher.create({
@@ -42,6 +43,7 @@ const createTeacher = async (req, res, next) => {
             const imageUrl = await uploadImage(image);
             const createdImage = await prisma.image.create({
                 data: {
+                    id: imageId,
                     imageName: image.originalname,
                     imageUrl,
                     teacherId: createdTeacher.id,
@@ -158,7 +160,7 @@ const updateTeacher = async (req, res, next) => {
         const image = req.file;
 
         const curentTeacher = await prisma.teacher.findUnique({
-            where: { id : id },
+            where: { id: id },
             include: {
                 image: true,
             },
@@ -172,7 +174,7 @@ const updateTeacher = async (req, res, next) => {
         }
 
         const updatedTeacher = await prisma.teacher.update({
-            where: { id :id },
+            where: { id: id },
             data: {
                 fullName,
                 NIP,
@@ -226,7 +228,7 @@ const deleteTeacher = async (req, res, next) => {
     try {
         const { id } = req.params;
         const teacher = await prisma.teacher.findUnique({
-            where: { id : id },
+            where: { id: id },
             include: {
                 image: true,
             },
@@ -249,7 +251,7 @@ const deleteTeacher = async (req, res, next) => {
         });
 
         const deletedTeacher = await prisma.teacher.delete({
-            where: { id : id },
+            where: { id: id },
         });
 
         res.status(200).json({

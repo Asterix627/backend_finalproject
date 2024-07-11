@@ -14,7 +14,7 @@ router.post(
     "/teacher",
     upload.single("image"),
     verifyToken,
-    verifyRoles,
+
     createTeacher,
 );
 router.get("/teachers", getTeachers);

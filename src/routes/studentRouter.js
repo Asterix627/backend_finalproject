@@ -10,20 +10,27 @@ router.post(
     upload.single("image"),
     studentController.createStudent,
 );
-router.get("/students", studentController.getAllStudent);
+router.get(
+    "/students",
+    verifyToken,
+    verifyRoles,
+    studentController.getAllStudent,
+);
 
 router.get("/student/:userId", verifyToken, studentController.getStudent);
 
 router.put(
     "/student/:id/approved",
     verifyToken,
+    verifyRoles,
     studentController.updateStudentApproved,
 );
 router.put(
     "/student/:id/reject",
     verifyToken,
+    verifyRoles,
     studentController.updateStudentReject,
 );
-router.delete("/student/:id", studentController.deleteStudent);
+router.delete("/student/:userId", studentController.deleteStudent);
 
 module.exports = router;

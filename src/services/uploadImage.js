@@ -2,7 +2,7 @@ const cloudinary = require("../config/cloudinary");
 
 async function uploadImage(file) {
     if (!file || !file.buffer) {
-        throw new Error("Empty file cuy");
+        throw new Error("Empty file");
     }
     return new Promise((resolve, reject) => {
         cloudinary.uploader
