@@ -5,26 +5,27 @@ const cloudinary = require("cloudinary").v2;
 const idGenerator = require("../utils/idGenerator");
 
 const createTeacher = async (req, res, next) => {
-    const { fullName, NIP, address, subjects, position } = req.body;
+    const { fullName, address, NIP, subjects, position } = req.body;
     const image = req.file;
 
     let createdTeacher;
     let createdImage;
 
     try {
-        const checkNIP = await prisma.teacher.findMany({
+        const checkNIP = await prisma.teacher.findUnique({
             where: {
                 NIP,
             },
         });
 
-        if (checkNIP.length > 0) {
+        if (checkNIP && checkNIP.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: "NIP already exists",
             });
         }
 
+        const imageId = idGenerator("IMG");
         const teacherId = idGenerator("TCH");
 
         const createdTeacher = await prisma.teacher.create({
@@ -86,13 +87,20 @@ const createTeacher = async (req, res, next) => {
 
 const getTeachers = async (req, res, next) => {
     try {
-        const { page, limit } = req.query;
+        const { page, limit, orderBy } = req.query;
         const pageNumber = parseInt(page) || 1;
         const pageSizeNumber = parseInt(limit) || 10;
+        let orderByClause;
+        if (orderBy == 1) {
+            orderByClause = { position: "desc" };
+        } else if (orderBy == 2) {
+            orderByClause = { subjects: "desc" };
+        } else {
+            orderByClause = { position: "desc" }; // default ordering
+        };
+        
         const teachers = await prisma.teacher.findMany({
-            orderBy: {
-                fullName: "asc",
-            },
+            orderBy: orderByClause,
             skip: (pageNumber - 1) * pageSizeNumber,
             take: pageSizeNumber,
         });
@@ -117,6 +125,7 @@ const getTeachers = async (req, res, next) => {
         next(error);
     }
 };
+
 
 const getDetailsTeacher = async (req, res, next) => {
     const id = req.params.id;

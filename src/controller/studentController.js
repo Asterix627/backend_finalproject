@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/client");
+const { Conflict, Unauthorized, NotFound } = require("http-errors");
 const uploadImage = require("../services/uploadImage");
 const cloudinary = require("cloudinary").v2;
 const idGenerator = require("../utils/idGenerator");
@@ -29,6 +30,7 @@ const createStudent = async (req, res, next) => {
     }
 
     try {
+        const imageId = idGenerator("IMG");
         const studentId = idGenerator("STD");
         newStudentRegis = await prisma.studentRegis.create({
             data: {
@@ -128,7 +130,11 @@ const getStudent = async (req, res, next) => {
 };
 
 const getAllStudent = async (req, res, next) => {
-    const students = await prisma.studentRegis.findMany();
+    const students = await prisma.studentRegis.findMany({
+        include: {
+            images: true,
+        },
+    });
     res.status(200).send({
         success: true,
         message: "success get all students",
@@ -137,41 +143,10 @@ const getAllStudent = async (req, res, next) => {
 };
 
 const updateStudentApproved = async (req, res, next) => {
-    const { userId } = req.params;
+    const { id } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { userId: userId },
-        });
-
-        console.log(student);
-
-        if (!student) {
-            throw new NotFound("student not found");
-        }
-
-        const [updateStudent, updateUser] = await prisma.$transaction([
-            prisma.studentRegis.update({
-                where: { userId: userId },
-                data: { status: "approved" },
-            }),
-            prisma.user.update({
-                where: { id: userId },
-                data: { role: "Student" },
-            }),
-        ]);
-
-        res.json({ updateStudent, updateUser });
-
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-const updateStudentReject = async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        const student = await prisma.studentRegis.findUnique({
-            where: { userId: userId },
+            where: { id : id },
         });
 
         if (!student) {
@@ -179,7 +154,28 @@ const updateStudentReject = async (req, res, next) => {
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { userId: userId },
+            where: { id : id },
+            data: { status: "Approved" },
+        });
+        res.json(updateStudent);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const updateStudentReject = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const student = await prisma.studentRegis.findUnique({
+            where: { id: id },
+        });
+
+        if (!student) {
+            throw new NotFound("student not found");
+        }
+
+        const updateStudent = await prisma.studentRegis.update({
+            where: { id: id },
             data: { status: "reject" },
         });
         res.json(updateStudent);

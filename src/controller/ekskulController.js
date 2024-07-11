@@ -89,6 +89,7 @@ const getAllEkskul = async (req, res) => {
                 extraName: true,
                 catagory: true,
                 shortDesc: true,
+                fullDesc: true,
                 meetingDays: true,
                 coach: true,
             },

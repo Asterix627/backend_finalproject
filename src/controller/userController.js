@@ -1,4 +1,3 @@
-const express = require("express");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const prisma = require("../../prisma/client/index");
@@ -67,16 +66,30 @@ const login = async (req, res, next) => {
         }
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-            expiresIn: "365d",
+            expiresIn: "20s",
         });
+
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            process.env.REFRESH_TOKEN_SECRET,
+            {
+                expiresIn: "1d",
+            },
+        );
 
         await prisma.user.update({
             where: { id: user.id },
-            data: { token: token },
+            data: { token: refreshToken },
         });
 
         const hasStudentRegis = user.studentRegis.length > 0;
         const studentRegisId = hasStudentRegis ? user.studentRegis[0].id : null;
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            // secure: true,
+            maxAge: 24 * 60 * 60 * 1000,
+        });
 
         res.send({
             success: true,
