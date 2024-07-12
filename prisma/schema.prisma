@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id           String         @id @db.Char(8)
+  id           String         @id @db.Char(36)
   fullName     String
   email        String         @unique
   password     String
@@ -21,13 +21,13 @@ model User {
 }
 
 model studentRegis {
-  id           String   @id @default(uuid()) @db.Char(36)
+  id           String   @id @db.Char(36)
   userId       String?   @unique
-  fullName     String
+  fullName     String   
   placeOfBirth String
-  dateOfBirth  String
+  dateOfBirth  String   
   schoolFrom   String
-  address      String?  @db.VarChar(20)
+  address      String?  @db.VarChar(255)
   phoneNumber  String?  @db.VarChar(255)
   images       Image[]
   status       String?
@@ -40,13 +40,12 @@ enum Role {
   Guest
   Admin
   Student
-  Teacher
 }
 
 model Teacher {
-  id        String   @id @default(uuid()) @db.Char(36)
+  id        String   @id @db.Char(36)
   fullName  String   @db.VarChar(255)
-  NIP       String   @db.VarChar(255)
+  NIP       String   @unique @db.VarChar(255)
   position  String   @db.VarChar(255)
   address   String   @db.VarChar(255)
   subjects  String   @db.VarChar(255)
@@ -56,7 +55,7 @@ model Teacher {
 }
 
 model Ekskul {
-  id          String   @id @default(uuid()) @db.Char(36)
+  id          Int      @id @default(autoincrement())
   extraName   String   @db.VarChar(255)
   catagory    String   @db.VarChar(255)
   shortDesc   String   @db.Text
@@ -71,14 +70,14 @@ model Ekskul {
 }
 
 model Image {
-  id             String        @id @default(uuid()) @db.Char(36)
+  id             String        @id @db.Char(36)
   imageName      String        @db.VarChar(255)
   imageUrl       String        @db.VarChar(255)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   userId         String?
   teacherId      String?
-  ekskulId       String?
+  ekskulId       Int?
   studentRegisId String?
   studentRegis   studentRegis? @relation(fields: [studentRegisId], references: [id])
   teacher        Teacher?      @relation(fields: [teacherId], references: [id])

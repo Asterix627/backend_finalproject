@@ -41,22 +41,6 @@ const validateCreateTeacher = [
     .withMessage('Subjects must be a string')
     .isLength({ max: 255 })
     .withMessage('Subjects cannot be longer than 255 characters'),
-
-  body('email')
-    .notEmpty()
-    .withMessage('Email is required')
-    .isEmail()
-    .withMessage('Invalid email')
-    .custom(async (value) => {
-      if (!value) {
-        throw new Error('Email is required');
-      }
-      const teacher = await prisma.teacher.findUnique({ where: { email: value } });
-      if (teacher) {
-        throw new Error('Email already exists');
-      }
-      return true;
-    }),
 ];
 
 module.exports = validateCreateTeacher;
