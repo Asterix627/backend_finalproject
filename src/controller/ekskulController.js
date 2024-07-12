@@ -91,14 +91,12 @@ const getAllEkskul = async (req, res) => {
         const pageSizeNumber = parseInt(limit) || 3
 
         const ekskul = await prisma.ekskul.findMany({
-            select: {
-                id: true,
-                extraName: true,
-                catagory: true,
-                shortDesc: true,
-                fullDesc: true,
-                meetingDays: true,
-                coach: true,
+            include: {
+                images: {
+                    select : {
+                        imageUrl : true
+                    }
+                }
             },
             skip: (pageNumber - 1) * pageSizeNumber,
             take: pageSizeNumber, 
@@ -108,7 +106,6 @@ const getAllEkskul = async (req, res) => {
         });
 
         const ekskulTotal = await prisma.ekskul.count()
-        console.log(ekskulTotal)
         const paginationMetaData = {
             page : pageNumber,
             ekskulTotal,
