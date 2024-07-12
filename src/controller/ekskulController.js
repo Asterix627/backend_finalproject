@@ -86,6 +86,10 @@ const addEkskul = async (req, res, next) => {
 
 const getAllEkskul = async (req, res) => {
     try {
+        const {page, limit} = req.query
+        const pageNumber = parseInt(page) || 1
+        const pageSizeNumber = parseInt(limit) || 3
+
         const ekskul = await prisma.ekskul.findMany({
             select: {
                 id: true,
@@ -96,11 +100,28 @@ const getAllEkskul = async (req, res) => {
                 meetingDays: true,
                 coach: true,
             },
+            skip: (pageNumber - 1) * pageSizeNumber,
+            take: pageSizeNumber, 
+            orderBy: {
+                extraName: "asc"
+            }
         });
+
+        const ekskulTotal = await prisma.ekskul.count()
+        console.log(ekskulTotal)
+        const paginationMetaData = {
+            page : pageNumber,
+            ekskulTotal,
+            limit : pageSizeNumber
+        }
+
         res.status(200).json({
+            success: true,
             message: "Get ekskul data success",
             data: ekskul,
+            paginationMetaData
         });
+        
     } catch (err) {
         res.status(500).json({
             error: "Failed to get ekskuls",
