@@ -32,7 +32,7 @@ const refreshToken = async (req, res, next) => {
                     { id: user.id },
                     process.env.JWT_SECRET,
                     {
-                        expiresIn: "120s",
+                        expiresIn: "1d",
                     },
                 );
                 res.status(200).json({ token, user });
