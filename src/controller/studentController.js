@@ -141,40 +141,53 @@ const getAllStudent = async (req, res, next) => {
 };
 
 const updateStudentApproved = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id },
+            where: { userId },
         });
 
         if (!student) {
-            throw new NotFound("student not found");
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
         }
 
-        const updateStudent = await prisma.studentRegis.update({
-            where: { id },
-            data: { status: "Approved" },
-        });
-        res.json(updateStudent);
+        const [updateStudent, updateUser] = await prisma.$transaction([
+            prisma.studentRegis.update({
+                where: { userId: userId },
+                data: { status: "Approved" },
+            }),
+            prisma.user.update({
+                where: { id: userId },
+                data: { role: "Student" },
+            }),
+        ]);
+
+        res.json({ updateStudent, updateRoleUser: updateUser.role });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
 const updateStudentReject = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     try {
         const student = await prisma.studentRegis.findUnique({
-            where: { id: id },
+            where: { userId },
         });
 
         if (!student) {
-            throw new NotFound("student not found");
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
         }
 
         const updateStudent = await prisma.studentRegis.update({
-            where: { id: id },
-            data: { status: "reject" },
+            where: { userId },
+            data: { status: "Rejected" },
         });
         res.json(updateStudent);
     } catch (error) {
