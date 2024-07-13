@@ -20,17 +20,22 @@ router.get(
 router.get("/student/:userId", verifyToken, studentController.getStudent);
 
 router.put(
-    "/student/:id/approved",
+    "/student/:userId/approved",
     verifyToken,
     verifyRoles,
     studentController.updateStudentApproved,
 );
 router.put(
-    "/student/:id/reject",
+    "/student/:userId/reject",
     verifyToken,
     verifyRoles,
     studentController.updateStudentReject,
 );
-router.delete("/student/:userId", studentController.deleteStudent);
+router.delete(
+    "/student/:userId",
+    verifyToken,
+    verifyRoles,
+    studentController.deleteStudent,
+);
 
 module.exports = router;
