@@ -48,6 +48,7 @@ const addEkskul = async (req, res, next) => {
 
         res.status(201).json({
             message: "Ekskul created successfully",
+            success : true,
             data: {
                 ekskul: createEkskul,
                 images: addImages.map((img) => img.imageUrl),
@@ -150,6 +151,7 @@ const getEkskulById = async (req, res, next) => {
         const imageUrl = ekskul.images.map((images) => images.imageUrl);
 
         res.status(200).json({
+            success: true,
             message: "Get Ekskul Success",
             data: {
                 ...ekskul,
@@ -238,6 +240,7 @@ const updateEkskul = async (req, res, next) => {
         }
 
         res.status(200).json({
+            success: true,
             message: "Eskul updated successfully",
             data: {
                 ekskul: newEkskul,
@@ -281,6 +284,7 @@ const deleteEkskul = async (req, res, next) => {
         });
 
         res.status(200).json({
+            success: true,
             message: "Ekskul Deleted Successfully",
         });
     } catch (err) {
